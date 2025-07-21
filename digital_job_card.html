@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Digital Job Card</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 600px; margin: auto; }
+        label { display: block; margin-top: 10px; }
+        input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; }
+        canvas { border: 1px solid #000; margin-top: 10px; }
+        button { margin-top: 15px; padding: 10px 15px; }
+    </style>
+</head>
+<body>
+    <h2>Digital Job Card</h2>
+    <form id="jobCardForm">
+        <label>Job Card Number</label>
+        <input type="text" id="jobCardNumber" required>
+
+        <label>Date & Time</label>
+        <input type="datetime-local" id="dateTime" required>
+
+        <label>Technician Name</label>
+        <input type="text" id="technicianName" required>
+
+        <label>Client/Department</label>
+        <input type="text" id="clientDepartment" required>
+
+        <label>Issue Description</label>
+        <textarea id="issueDescription" rows="3" required></textarea>
+
+        <label>Work Done</label>
+        <textarea id="workDone" rows="3" required></textarea>
+
+        <label>Time Spent (hours)</label>
+        <input type="number" id="timeSpent" step="0.1" required>
+
+        <label>Status</label>
+        <select id="status" required>
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Closed">Closed</option>
+        </select>
+
+        <label>Signature</label>
+        <canvas id="signaturePad" width="400" height="150"></canvas>
+        <button type="button" onclick="clearSignature()">Clear Signature</button>
+
+        <button type="submit">Save Job Card</button>
+    </form>
+
+    <script>
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        canvas.addEventListener('mousedown', () => drawing = true);
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mousemove', draw);
+
+        function draw(e) {
+            if (!drawing) return;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        document.getElementById('jobCardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const jobCardData = {
+                jobCardNumber: document.getElementById('jobCardNumber').value,
+                dateTime: document.getElementById('dateTime').value,
+                technicianName: document.getElementById('technicianName').value,
+                clientDepartment: document.getElementById('clientDepartment').value,
+                issueDescription: document.getElementById('issueDescription').value,
+                workDone: document.getElementById('workDone').value,
+                timeSpent: document.getElementById('timeSpent').value,
+                status: document.getElementById('status').value,
+                signature: canvas.toDataURL()
+            };
+            console.log("Job Card Saved:", jobCardData);
+            alert("Job Card Saved Locally (Check Console)");
+        });
+    </script>
+</body>
+</html>
